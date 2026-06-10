@@ -13,7 +13,6 @@ find_path(GLFW_INC GLFW/glfw3.h
 set(GUI_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Viewer.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/Camera.cpp
 )
 
 if(EXISTS ${IMGUI_DIR}/imgui.cpp AND (TARGET glfw OR GLFW_LIB) AND GLFW_INC
