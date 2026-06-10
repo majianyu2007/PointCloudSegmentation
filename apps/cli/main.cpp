@@ -38,6 +38,7 @@ static void printUsage() {
 int main(int argc, char** argv) {
     std::string inputPath;
     std::string outputPath = "segmented.ply";
+    std::string saveInputPath;  // 把（生成或读入的）原始点云另存一份，方便界面加载
     bool useDemo = false;
     int exportLevel = -1;  // -1 表示最后一层
     SegParams params;
@@ -58,6 +59,7 @@ int main(int argc, char** argv) {
         else if (a == "--curv") params.curvatureThreshold = std::stof(next("--curv"));
         else if (a == "--min") params.minClusterSize = std::stoi(next("--min"));
         else if (a == "--level") exportLevel = std::stoi(next("--level"));
+        else if (a == "--save-input") saveInputPath = next("--save-input");
         else if (a == "-h" || a == "--help") { printUsage(); return 0; }
         else if (!a.empty() && a[0] != '-') inputPath = a;
         else { std::cerr << "未知参数: " << a << "\n"; printUsage(); return 1; }
@@ -78,6 +80,16 @@ int main(int argc, char** argv) {
         }
     }
     std::cout << "      点数: " << cloud.size() << "\n";
+
+    // 可选：把原始点云另存一份（统一存成白色 ascii PLY），供界面或报告使用
+    if (!saveInputPath.empty()) {
+        std::vector<unsigned char> w(cloud.size(), 220);
+        std::string e;
+        if (savePLYColored(saveInputPath, cloud, w, w, w, e))
+            std::cout << "      已保存原始点云到: " << saveInputPath << "\n";
+        else
+            std::cerr << "      保存原始点云失败: " << e << "\n";
+    }
 
     // 2) 建 KD 树 + 估计法向量
     std::cout << "[2/4] 建立 KD 树并估计法向量 (k=" << params.k << ") ...\n";
