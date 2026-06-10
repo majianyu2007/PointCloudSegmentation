@@ -1,0 +1,31 @@
+# 构建产物
+build/
+*.o
+*.obj
+*.a
+*.dylib
+*.so
+*.exe
+
+# 运行/测试产生的输出
+*.ply
+!data/*.ply
+test_roundtrip.ply
+segmented.ply
+
+# 编辑器/系统
+.DS_Store
+.vscode/
+.idea/
+
+# LaTeX 中间产物
+*.aux
+*.log
+*.out
+*.toc
+*.synctex.gz
+*.thm
+*.fls
+*.fdb_latexmk
+*.bbl
+*.blg
