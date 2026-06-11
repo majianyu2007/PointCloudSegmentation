@@ -16,7 +16,7 @@ set(GUI_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/ViewerPanel.cpp
 )
 
-if(EXISTS ${IMGUI_DIR}/imgui.cpp AND (TARGET glfw OR GLFW_LIB) AND GLFW_INC
+if(EXISTS ${IMGUI_DIR}/imgui.cpp AND (TARGET glfw OR (GLFW_LIB AND GLFW_INC))
    AND EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp)
     message(STATUS "找到 GLFW 与 ImGui，启用图形界面 pcseg_gui")
 
@@ -30,7 +30,10 @@ if(EXISTS ${IMGUI_DIR}/imgui.cpp AND (TARGET glfw OR GLFW_LIB) AND GLFW_INC
         ${IMGUI_DIR}/backends/imgui_impl_opengl3.cpp
     )
     target_include_directories(pcseg_gui PRIVATE
-        ${IMGUI_DIR} ${IMGUI_DIR}/backends ${GLFW_INC})
+        ${IMGUI_DIR} ${IMGUI_DIR}/backends)
+    if(GLFW_INC)
+        target_include_directories(pcseg_gui PRIVATE ${GLFW_INC})
+    endif()
     target_link_libraries(pcseg_gui PRIVATE pcseg_core)
 
     if(TARGET glfw)

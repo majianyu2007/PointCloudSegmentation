@@ -5,6 +5,7 @@
 // 截图模式：  pcseg_gui --screenshot out.ppm   （载入演示场景，渲染并保存一帧后退出）
 
 #include "GLHeaders.h"
+#define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 
 #include "imgui.h"

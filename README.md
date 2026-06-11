@@ -61,6 +61,21 @@ cmake --build build -j
 cd build && ctest --output-on-failure
 ```
 
+### Windows / Code::Blocks
+
+推荐仍然走 CMake，让它生成 Code::Blocks 工程文件，避免手工维护 `.cbp` 后源文件列表不同步。
+
+1. 安装 MinGW-w64、CMake、Code::Blocks，以及 GLFW 开发库。
+2. 确认 Code::Blocks 的编译器使用支持 C++17 的 MinGW-w64。
+3. 在项目根目录生成工程：
+
+```bat
+cmake -S . -B build-codeblocks -G "CodeBlocks - MinGW Makefiles" -DCMAKE_BUILD_TYPE=Release
+```
+
+生成后打开 `build-codeblocks/PointCloudSegmentation.cbp` 即可。若本机暂未配置 GLFW，CMake 会跳过
+`pcseg_gui`，但 `pcseg_core`、`pcseg_cli` 和 `pcseg_tests` 仍可构建。源码请保持 UTF-8 编码。
+
 ## 命令行参数
 
 | 参数 | 含义 | 默认 |
@@ -84,5 +99,4 @@ cd build && ctest --output-on-failure
 
 本项目在开发中使用了 Claude Code（Anthropic Claude Opus 4.8）辅助编码、调试与文档撰写；
 算法选型、参数取值、测试断言与结果分析均经本人核对确定。详见实习报告“AI 使用情况”一节。
-
 
