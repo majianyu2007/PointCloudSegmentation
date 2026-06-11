@@ -19,6 +19,7 @@ add_library(pcseg_core STATIC
     core/src/Normals.cpp
     core/src/Segmentation.cpp
     core/src/PointCloudIO.cpp
+    core/src/Primitive.cpp
     core/src/Synthetic.cpp
 )
 target_include_directories(pcseg_core PUBLIC core/include)

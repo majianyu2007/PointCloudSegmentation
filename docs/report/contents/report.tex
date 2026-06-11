@@ -93,7 +93,8 @@
 
 \begin{itemize}
   \item \textbf{核心库 \texttt{pcseg\_core}}：\texttt{Vec3}、\texttt{PointCloud}、\texttt{KdTree}、
-        法向量估计、\texttt{Segmentation}、\texttt{PointCloudIO}、合成数据生成器；
+        法向量估计、\texttt{Segmentation}、\texttt{PointCloudIO}、以及基于抽象基类
+        \texttt{Primitive} 的合成点云生成器；
   \item \textbf{命令行 \texttt{pcseg\_cli}}：无界面跑通“读云→法向量→分割→导出”；
   \item \textbf{图形界面 \texttt{pcseg\_gui}}：\texttt{Viewer} + \texttt{Camera}，基于 GLFW/OpenGL/ImGui；
   \item \textbf{测试 \texttt{pcseg\_tests}}：基于 CTest 的单元测试。
@@ -117,6 +118,10 @@
     \texttt{PointCloud}  & 点云容器：坐标、法向量、曲率；包围盒、质心 \\
     \texttt{KdTree}      & 3D KD 树，建树与 $k$ 近邻查询 \\
     \texttt{SymEigen}    & $3\times3$ 对称矩阵 Jacobi 特征分解（供 PCA 用） \\
+    \texttt{Primitive}   & \textbf{抽象基类}：几何体接口（纯虚 \texttt{sample}/\texttt{name}） \\
+    \quad\texttt{PlanePrimitive} & 派生类：平面（地面、斜面） \\
+    \quad\texttt{SpherePrimitive} & 派生类：球面 \\
+    \quad\texttt{CylinderPrimitive} & 派生类：圆柱侧面 \\
     \texttt{Segmentation}& 区域生长与由粗到细分割（\texttt{SegParams}/\texttt{SegResult}） \\
     \texttt{PointCloudIO}& PLY/XYZ 读取、着色 PLY 写出 \\
     \texttt{Camera}      & 轨迹球相机：旋转/缩放/平移、三视图、视图矩阵 \\
@@ -157,6 +162,54 @@
       {箭头表示\\“使用/依赖”};
   \end{tikzpicture}
   \caption{类之间的依赖关系（橙色为核心库，绿色为应用层）}\label{fig:class}
+\end{figure}
+
+\subsection{面向对象设计：抽象、继承与多态}
+为体现面向对象的抽象与多态，本项目在合成点云模块设计了一处自然的继承体系：
+每一种几何体（平面、球、圆柱）都是一个 \texttt{Primitive}。\texttt{Primitive} 是
+\textbf{抽象基类}，声明两个\textbf{纯虚函数}——\texttt{name()} 报出名称、\texttt{sample()}
+在表面采样若干点并打标签；\texttt{PlanePrimitive}、\texttt{SpherePrimitive}、
+\texttt{CylinderPrimitive} 各自\textbf{继承}它并给出不同实现。场景生成函数 \texttt{makeScene}
+把各几何体对象统一存进一个“指向基类的智能指针”数组，循环调用它们的 \texttt{sample}
+方法，运行时由\textbf{多态}（虚函数动态绑定）决定实际采样哪种几何体。
+
+这样设计的理由是：各几何体的采样公式不同，但“在表面取点、加噪声、打标签”的流程是一致的。
+用抽象基类统一接口后，新增一种几何体（如圆锥）只需再派生一个子类、在场景里多放一个对象即可，
+\texttt{makeScene} 主体无需改动，符合开闭原则；同时把“地面/斜面”这类同构对象用同一个
+\texttt{PlanePrimitive} 类、不同构造参数来表达，避免了重复代码。其 UML 类图见\autoref{fig:uml}。
+
+\begin{figure}[!htb]
+  \centering
+  \begin{tikzpicture}[
+      umlclass/.style={rectangle split, rectangle split parts=3, draw,
+                       font=\scriptsize, text width=3.7cm, fill=blue!4},
+      >={Triangle[open]}]
+    \node[umlclass] (base) at (0,0) {
+      \textbf{Primitive}〈抽象〉
+      \nodepart{second}\# label\_ : int
+      \nodepart{third}+ name() : string〈纯虚〉\\ + sample(\dots)〈纯虚〉\\ \# emit(\dots)
+    };
+    \node[umlclass] (plane) at (-5.0,-3.2) {
+      \textbf{PlanePrimitive}
+      \nodepart{second}- origin\_, du\_, dv\_ : Vec3
+      \nodepart{third}+ name()\\ + sample(\dots)
+    };
+    \node[umlclass] (sphere) at (0,-3.2) {
+      \textbf{SpherePrimitive}
+      \nodepart{second}- center\_ : Vec3\\ - radius\_ : float
+      \nodepart{third}+ name()\\ + sample(\dots)
+    };
+    \node[umlclass] (cyl) at (5.0,-3.2) {
+      \textbf{CylinderPrimitive}
+      \nodepart{second}- cx\_, cy\_, radius\_, height\_ : float
+      \nodepart{third}+ name()\\ + sample(\dots)
+    };
+    % 继承关系：空心三角箭头由派生类指向基类
+    \draw[->] (plane.north) -- (base.south west);
+    \draw[->] (sphere.north) -- (base.south);
+    \draw[->] (cyl.north) -- (base.south east);
+  \end{tikzpicture}
+  \caption{\texttt{Primitive} 抽象基类与派生类的 UML 类图（空心三角箭头表示继承）}\label{fig:uml}
 \end{figure}
 
 \subsection{KD 树与 $k$ 近邻}
@@ -233,7 +286,7 @@ $\sigma$ 越小表示邻域越平坦。$3\times3$ 对称矩阵的特征分解用
 
 \subsection{单元测试}
 项目自带轻量测试框架（用宏统计检查项与失败数），并接入 CTest。测试用例及结果见
-\autoref{tab:test}，共 69 项检查全部通过。
+\autoref{tab:test}，共 78 项检查全部通过。
 
 \begin{table}[!htb]
   \centering
@@ -246,6 +299,7 @@ $\sigma$ 越小表示邻域越平坦。$3\times3$ 对称矩阵的特征分解用
     KdTree      & $k$ 近邻结果与暴力遍历完全一致（20 组查询） & 通过 \\
     Normals     & 平面上的点法向量接近 $(0,0,1)$、曲率 $<0.02$ & 通过 \\
     PLY 往返    & 着色 PLY 写出后读回，坐标一致 & 通过 \\
+    多态        & 基类指针调用派生类虚函数 \texttt{name}/\texttt{sample}，几何约束成立 & 通过 \\
     两平面      & 朝向不同且分离的两平面恰好分成 2 段，纯度 $>0.95$ & 通过 \\
     演示场景    & 由粗到细段数递增，最细层 $\ge 4$ 段，纯度 $>0.85$ & 通过 \\
     \bottomrule

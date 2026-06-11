@@ -10,6 +10,7 @@
 #include <random>
 #include <algorithm>
 #include <string>
+#include <memory>
 
 #include "pcseg/Vec3.h"
 #include "pcseg/PointCloud.h"
@@ -18,6 +19,7 @@
 #include "pcseg/Normals.h"
 #include "pcseg/Segmentation.h"
 #include "pcseg/Synthetic.h"
+#include "pcseg/Primitive.h"
 
 using namespace pcseg;
 
@@ -195,12 +197,51 @@ static void testScene() {
     CHECK(p > 0.85);
 }
 
+// 多态：通过基类 Primitive 指针调用派生类（Plane/Sphere/Cylinder）的虚函数
+static void testPrimitivePolymorphism() {
+    std::cout << "[test] 多态：Primitive 基类指针调用派生类虚函数\n";
+    std::mt19937 rng(1);
+    std::normal_distribution<float> noise(0.0f, 0.0f);  // 不加噪声，便于精确断言
+    std::uniform_real_distribution<float> uni(0.0f, 1.0f);
+
+    std::vector<std::unique_ptr<Primitive>> prims;
+    prims.push_back(std::make_unique<PlanePrimitive>(
+        0, Vec3(0, 0, 0), Vec3(1, 0, 0), Vec3(0, 1, 0)));   // z=0 平面
+    prims.push_back(std::make_unique<SpherePrimitive>(
+        1, Vec3(0, 0, 0), 1.0f));                            // 单位球
+    prims.push_back(std::make_unique<CylinderPrimitive>(
+        2, 0.0f, 0.0f, 1.0f, 2.0f));                         // 半径1圆柱
+
+    // 虚函数 name() 应按实际类型分派
+    CHECK(prims[0]->name() == "Plane");
+    CHECK(prims[1]->name() == "Sphere");
+    CHECK(prims[2]->name() == "Cylinder");
+
+    PointCloud c;
+    std::vector<int> labels;
+    for (const auto& p : prims) p->sample(50, rng, noise, uni, c, labels);
+
+    CHECK(c.size() == 150);
+    CHECK(labels.size() == 150);
+    // 标签按几何体顺序写入
+    CHECK(labels[0] == 0 && labels[70] == 1 && labels[130] == 2);
+    // 平面点 z 应为 0（噪声为 0）
+    CHECK(std::fabs(c.points[10].z) < 1e-6);
+    // 球面点到球心距离应等于半径 1
+    CHECK_NEAR((c.points[70] - Vec3(0, 0, 0)).length(), 1.0f, 1e-4);
+    // 圆柱侧面点到轴线(x=y=0)的水平距离应等于半径 1
+    float r = std::sqrt(c.points[130].x * c.points[130].x +
+                        c.points[130].y * c.points[130].y);
+    CHECK_NEAR(r, 1.0f, 1e-4);
+}
+
 int main() {
     std::cout << "==== pcseg 单元测试 ====\n";
     testVec3();
     testKdTree();
     testNormalsOnPlane();
     testPlyRoundTrip();
+    testPrimitivePolymorphism();
     testTwoPlanes();
     testScene();
 
