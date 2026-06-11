@@ -3,14 +3,14 @@
 
 \section{附录：核心代码清单} \label{app:tool}
 
-本附录列出核心算法库的关键源文件。完整工程（含图形界面、命令行工具与单元测试）见随附
-源码仓库，目录结构与构建方法见仓库根目录的 \texttt{README.md}。
-
-\subsection{KD 树（k 近邻查询）}
-\lstinputlisting[language=C++, caption={KdTree.cpp}]{code/KdTree.cpp}
+为控制篇幅（核心代码不超过 3 页），本附录仅给出两段最具代表性的核心代码：PCA 法向量估计，
+以及“由粗到细”分层细分的 \texttt{segment} 函数（区域生长 \texttt{regionGrow} 已在正文
+\autoref{lst:rg} 给出）。KD 树、文件读写、图形界面等完整源码见随附仓库，结构与构建方法见
+仓库根目录 \texttt{README.md}。
 
 \subsection{PCA 法向量与曲率估计}
-\lstinputlisting[language=C++, caption={Normals.cpp}]{code/Normals.cpp}
+\lstinputlisting[language=C++, caption={Normals.cpp —— PCA 估计法向量与曲率}]{code/Normals.cpp}
 
-\subsection{区域生长与由粗到细分割}
-\lstinputlisting[language=C++, caption={Segmentation.cpp}]{code/Segmentation.cpp}
+\subsection{由粗到细分层细分}
+\lstinputlisting[language=C++, caption={Segmentation.cpp —— segment 函数（由粗到细）},
+  firstline=90, lastline=144]{code/Segmentation.cpp}

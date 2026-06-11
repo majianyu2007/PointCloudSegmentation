@@ -166,7 +166,7 @@ $O(N^2)$，点数上万时很慢。KD 树按坐标轴轮流划分空间（$x\to 
 的点，并利用“分割面距离”做剪枝，平均复杂度降到约 $O(\log N)$。
 
 \subsection{法向量与曲率估计（PCA）}
-对每个点取其 $k$ 个近邻，计算邻域质心，得到 $3\times3$ 协方差矩阵
+对每个点取其 $k$ 个近邻，计算邻域质心，得到 $3\times3$ 协方差矩阵\cite{hoppe1992}
 \[
   C=\frac{1}{k}\sum_{i=1}^{k}(p_i-\bar p)(p_i-\bar p)^{\mathsf T}.
 \]
@@ -179,7 +179,7 @@ $\sigma$ 越小表示邻域越平坦。$3\times3$ 对称矩阵的特征分解用
 实现（见\autoref{lst:eigen}），不依赖外部线性代数库。
 
 \subsection{区域生长分割}
-区域生长把“表面朝向一致、且空间连通”的点聚成同一片段，步骤如下：
+区域生长把“表面朝向一致、且空间连通”的点聚成同一片段\cite{rabbani2006}，步骤如下：
 
 \begin{enumerate}[label=(\arabic*)]
   \item 把所有未分配点按曲率\emph{从小到大}排序，越平坦的越先做种子；
@@ -305,23 +305,23 @@ $\sigma$ 越小表示邻域越平坦。$3\times3$ 对称矩阵的特征分解用
 
 \section{实习日志}
 
-\begin{internlog}{2026/5/26}[选题与调研]
+\begin{internlog}{2026/6/15}[选题与调研]
   确定选题 56（3D 点云目标分割）。调研区域生长、法向量估计、KD 树等方法，
   决定不依赖 PCL，核心算法自行实现。
 \end{internlog}
 
-\begin{internlog}{2026/6/3}[核心算法]
+\begin{internlog}{2026/6/19}[核心算法]
   完成 \texttt{Vec3}、\texttt{PointCloud}、\texttt{KdTree}、PCA 法向量、区域生长与
   由粗到细分割，并写好命令行工具与单元测试，全部测试通过。
 \end{internlog}
 
-\begin{internlog}{2026/6/8}[图形界面]
+\begin{internlog}{2026/6/24}[图形界面]
   基于 GLFW + OpenGL + ImGui 实现三维交互界面：分段着色、迭代层回放、三视图切换、
   参数实时调节，并截图用于报告。
 \end{internlog}
 
-\begin{internlog}{2026/6/10}[测试与报告]
-  完成开发，分析棱边泄漏局限，撰写实习报告并用 Xe\LaTeX{} 排版定稿。
+\begin{internlog}{2026/6/26}[测试与报告]
+  补充单元测试与性能分析，分析棱边泄漏局限，撰写实习报告并用 Xe\LaTeX{} 排版定稿。
 \end{internlog}
 
 \section{实习总结}
