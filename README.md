@@ -85,3 +85,4 @@ cd build && ctest --output-on-failure
 本项目在开发中使用了 Claude Code（Anthropic Claude Opus 4.8）辅助编码、调试与文档撰写；
 算法选型、参数取值、测试断言与结果分析均经本人核对确定。详见实习报告“AI 使用情况”一节。
 
+
