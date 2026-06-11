@@ -29,3 +29,9 @@ segmented.ply
 *.fdb_latexmk
 *.bbl
 *.blg
+*.bcf
+*.run.xml
+*.xdv
+*.idx
+*.lof
+*.lot

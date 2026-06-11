@@ -1,0 +1,16 @@
+% 本文件是实习报告的附录：核心代码清单
+% 论文的主文件位于上级目录的 `main.tex`
+
+\section{附录：核心代码清单} \label{app:tool}
+
+本附录列出核心算法库的关键源文件。完整工程（含图形界面、命令行工具与单元测试）见随附
+源码仓库，目录结构与构建方法见仓库根目录的 \texttt{README.md}。
+
+\subsection{KD 树（k 近邻查询）}
+\lstinputlisting[language=C++, caption={KdTree.cpp}]{code/KdTree.cpp}
+
+\subsection{PCA 法向量与曲率估计}
+\lstinputlisting[language=C++, caption={Normals.cpp}]{code/Normals.cpp}
+
+\subsection{区域生长与由粗到细分割}
+\lstinputlisting[language=C++, caption={Segmentation.cpp}]{code/Segmentation.cpp}

@@ -1,0 +1,105 @@
+% 文档类(模板)
+\documentclass[%
+% 类型：
+%   1. 设计，基于ctexart实现，章节最高级别为\section（节）
+%   2. 论文，基于ctexart实现，章节最高级别为\section（节）
+%   3. 报告，基于ctexbook实现，章节最高级别为\part（部分），实际用到\chaper（章）
+type = 设计,
+cfg-file = {settings/nwafupaper.def },   % 指定驱动数据配置文件的文件名称（封面构成及前料内容等）
+% 若未指定或指定的文件不存在，则使用默认配置
+ oneside,        % 单面模式(各章连续起排，适用于电子文档)
+%twoside,        % 双面模式(各章从奇数页起排，适用于打印装订)
+]{nwafupaper}
+% 导言区
+
+% 将需要载入的宏包统一在settings/package.tex中进行管理
+\input{settings/packages.tex}
+% 将必要的设置统一在settings/format.tex中进行管理
+\input{settings/format.tex}
+
+% 本报告绘制流程图/类关系图需要的 TikZ 库
+\usetikzlibrary{arrows.meta, positioning, fit, backgrounds}
+
+% 排版参数设置
+\nwafuset{
+	% 论文基础格式
+	style = {
+		% 由于版权原因，本模板不提供任何字体安装文件，如有需要请自行按需安装。
+		% 对于对于Times New Roman这一西文字体的要求，在论文撰写规范中明确说明，
+		% 可以使用相似字体进行替换，请根据情况自行决定。
+		% 在此，强烈建议让系统自行选择使用合适的字体，
+		% 非特殊情况不要设置font和cjk-font这两个选项。
+		% 如果中文排版出现“��”(主要发生在姓名排版中)，则可更改cjk-font选项。
+		% font          = times*,            % 西文字体(garamond|libertinus|lm|palatino|times|times*|none)
+		% cjk-font      = windows,           % 中文字体(adobe|fandol|founder|mac|sinotype|sourcehan|windows|none)
+		cjk-font      = fandol,             % 用 TeX Live 自带 Fandol 中文字体，跨平台可复现，无需安装系统字体
+		bib-resource  = {bib/sample.bib},   % 参考文献数据源文件名，注意需要完整路径及后缀名
+		% hyperlink     = color,              % 彩色超链接，适用于电子文档，便于检查交叉引用，打印装订建议注释该选项
+	},
+	% 基本信息录入
+	info = {
+		subject = { 面向对象程序设计实践 },            % 课程名称
+		title = { 3D点云目标分割方法设计与实现 }, % 课程论文、设计或报告标题
+		department = { 信息工程学院 },             % 学院名称
+		major = {软件工程},                % 专业
+		author = { 马建宇 },                 % 作者中文姓名
+		student-id = {2023012760},                  % 学号
+		class-id = {软工2004},                         % 班级 15级2班
+		practicetime = {2026年5月26日---6月9日},   % 起止日期
+		% date = {2026年6月},                      % 课程设计或实习时间(月份)，默认为编译时当前年和月
+		% 指导教师，每个任课教师或指导教师包括英文逗号分隔的姓名和职称(可以省略)，
+		% 不同任课教师或指导教师置于大括号内，然后用英文逗号分隔
+		supervisor = { {耿楠, 教授} },
+		% 协助指导教师，如该选项未设置，则不输出该条目
+		% 每个任课教师或指导教师包括英文逗号分隔的姓名和职称(可以省略)，
+		% 不同任课教师或指导教师置于大括号内，然后用英文逗号分隔
+		% 如无协助指导教师，则注释该选项，模板会自动按空字段处理
+		% cosupervisor = { {王泽鹏, 大咖}, {孙海天} },
+	},
+}
+% 录入摘要、符号对照表、术语表等信息
+%\nwafuset{
+%	abstract = {
+%		%    abstractfile  = { contents/chap00-abs.tex },      % 摘要文件名称(注意需要有.tex后缀名)
+%		keywords      = {课程论文、课程设计或实习报告, 模板, \nwafupaper}, % 关键字列表(注意用英文逗号分隔)
+%		notationfile  = { contents/chap00-notation.tex }, % 主要符号对照表文件名称(注意需要有.tex后缀名，
+%		% 若忽略该参数或提供空参数，则不输出主要符号注释表)
+%		termfile      = { contents/chap00-term.tex }      % 术语表(注意需要有.tex后缀名，
+%		% 若忽略该参数或提供空参数，则不输出术语表)
+%	},
+%}
+
+
+% 录入摘要、关键词
+\nwafuset{
+	abstract = {
+		abstractfile  = { contents/abstract.tex },
+		keywords      = {点云分割, 区域生长, 法向量估计, 由粗到细, OpenGL可视化, 面向对象},
+	},
+}
+
+% 正文区(有且只能有一个)
+\begin{document}
+	% 这个命令用来关闭版心底部强制对齐，
+	% 可以减少不必要的 underfull \vbox 提示，但会影响排版效果
+	% \raggedbottom
+	
+	% 由于论文模板中已设计了自动排版封面、摘要、目录等功能，
+	% 因此，无需手动排版这些前料内容。
+	
+	% 主体部分是论文的核心
+	\mainmatter
+
+	% 报告正文（按章节分节撰写）
+	\include{contents/report}
+
+	% 打印参考文献列表
+	\bibmatter*
+	\printbibliography
+
+	% 排版附录
+	\appendix
+	\input{contents/app-requirements}
+	\input{contents/app-codelists}
+
+\end{document}

@@ -1,0 +1,101 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%               			  %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+\section{附录:程序设计及报告要求} \label{app:task}
+
+\subsection{代码量}
+\subsubsection{核心代码行数}
+核心代码应达到 500行以上（含必要的空行与注释）。若使用 AI 辅助编程，总代码量不少于 1000 行。
+
+\subsection{功能方向}
+\subsubsection{用户界面}
+推荐使用控制台完成，UI 界面并非必需。
+
+\subsubsection{可选项目示例}
+\begin{itemize}
+	\item 图书管理系统（核心类：Book、User、Library、BorrowRecord 等）；
+	\item 学生成绩管理系统（核心类：Student、Course、ScoreManager 等）。
+\end{itemize}
+
+\subsubsection{测试数据要求}
+测试数据要充分，需考虑输入合法性校验、边界值处理等多种出错情形。
+
+凡选择管理系统类题目，必须要有文件读写操作，文件中初始数据不得少于100个数据元素(复制或随机生成)，且需要对相关数据的有效性进行合理验证；选择游戏、计算器、算法动态演示等题目的同学需要设计简易的交互界面。
+
+\subsection{类与文件要求}
+\subsubsection{类设计}
+类的数量不少于 4 个，保证每个类有明确职责，体现封装及简单的继承关系。
+
+\subsubsection{多文件结构}
+文件数量不少于 5 个，每个文件不超过 200 行（main 函数所在文件除外）。推荐使用头文件与源文件分离的组织方式，例如：
+\begin{verbatim}
+	Book.h / Book.cpp
+	Library.h / Library.cpp
+	main.cpp
+\end{verbatim}
+
+\subsection{报告与设计要求}
+\subsubsection{UML 图}
+绘制简单的 UML 类图，标明类的属性与方法，以及类之间的简单关系（如继承、关联）。
+
+\subsubsection{报告格式}
+撰写格式规范，段落合理，图片需加图注并编号。报告应重点体现：
+\begin{itemize}
+	\item 代码编写思路；
+	\item 类的设计理由；
+	\item 遇到的问题及解决过程。
+\end{itemize}
+避免使用形式化的模板套话。
+
+
+\subsubsection{报告篇幅}
+报告核心内容不少于 5 页，附录中的核心代码不超过 3 页。
+
+
+
+\section{附录：开发工具与资源要求}\label{app:tool}
+
+\subsection{编程语言}
+C++
+
+\subsection{代码管理}
+Gitee 或 GitHub（推荐使用，但非必需）
+
+\subsection{编程工具推荐}
+Codeblocks、Visual Studio Code、Visual Studio 等。
+
+\subsection{图形界面（界面非必需，可无界面）}
+
+\subsubsection{SFML（推荐）}
+简单多媒体库。耿楠教授录制教程：\url{https://bilibili.com/video/BV1Ev411N7kG/}
+
+\subsubsection{Qt（推荐）}
+孙海天老师录制教程：\url{https://www.bilibili.com/video/BV1k8411Z7fk/}
+
+\subsubsection{MFC / EasyX /wxWidgets}
+若使用 C 风格代码，将是扣分项。
+
+
+
+\subsection{其他相关开源库（选用）}
+\subsubsection{PCL点云处理库}
+\subsubsection{OpenGL图形库}
+\subsubsection{OpenCV计算机视觉库}
+\subsection{论文撰写}
+\subsubsection{\LaTeX（推荐）}
+\begin{itemize}
+	\item 耿楠教授录制教程：
+	
+	\url{https://www.bilibili.com/video/BV15b411j7Au/?vd_source=57a4513a9d3e5a7d74c46a2170adfaf7}
+	
+	\item LaTeX 安装教程：
+	
+	\url{https://www.bilibili.com/video/BV1tg4y1B7f3/?spm_id_from=333.337.search-card.all.click&vd_source=57a4513a9d3e5a7d74c46a2170adfaf7}
+	
+	\item 报告模板（作业管理系统 / 相关材料 / 附件2-实习报告(LaTeX模板)）
+\end{itemize}
+
+\subsubsection{WPS / Word}

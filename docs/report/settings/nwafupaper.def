@@ -1,0 +1,132 @@
+%%% ----------------------------------------------------------------------------
+%%% 内容: 西北农林科技大学课程论文模板自定义驱动数据
+%%% 作用: 定义封面元素、封面构成等基本驱动数据
+%%% 语法: expl3（LaTeX3）
+%%% 名称: nwafupaper.def
+%%% 作用：定义信息工程学院面向对象实践课程的驱动数据及选项
+%%% 用法：在nwafu / style中用cfg-file选项载入该配置文件
+%%% ----------------------------------------------------------------------------
+
+% 学校名称tl常量，存储"西北农林科技大学"学校名称
+\tl_const:Nn \c__nwafu_label_simp_tl { 西北农林科技大学 }
+
+% 文档类型clist常量，可以通过索引输出"课程设计"等名称，
+% 可以根据需要修改，但目前仅支持3类，分别用编号1、2、3获取
+%   1. 编号1对应课程设计，基于ctexart实现，章节最高级别为\section（节）
+%   2. 编号2对应课程论文，基于ctexart实现，章节最高级别为\section（节）
+%   3. 编号3对应实习报告，基于ctexbook实现，章节最高级别为\part（部分），实际用到\chaper（章）
+\clist_const:Nn \c__nwafu_paper_type_clist
+  { 实习报告, 实习报告, 课程论文 }   % 新增，根据C++课程实践进行的针对性修改
+%  { 课程设计, 课程论文, 实习报告}  %原格式
+  
+
+% 封面作者信息驱动数据clist列表
+%   字段格式：{标签}{内容}{标记}
+%   字段标记：0=普通, 1=导师(需格式化), 2=合作导师(需格式化)
+% 说明：
+%   各字段内容可以使用已定义的tl常量和tl变量，也可以直接填写内容
+%   强烈建议使用已定义的tl常量和tl变量
+%   已定义的tl常量和tl变量有:
+%     类似\c__nwafu_label_title_tl的tl常量，用于保存各类标签
+%     类似\l__nwafu_info_title_tl的tl变量，用于接收各类输入数据
+\clist_map_inline:nn
+   {
+   %     { title        }{ 题目           },
+   %     { author       }{ 学生姓名       },
+   %     { supervisor   }{ 指导教师       },
+   %     { cosupervisor }{ 合作指导教师   },
+   %     { department   }{ 培养单位       },
+   %     { major        }{ 专业名称       },
+   %     { class_id     }{ 班级           },
+   %     { student_id   }{ 学号           },
+   %     { period       }{ 起止日期       },
+   %     { date         }{ 实践日期       },
+   %     { abstract     }{ 摘要           },
+   %     { keywords     }{ 关键词         },
+   %     { figtab       }{ 插图与附表清单 },
+   %     { notation     }{ 符号表         },
+   %     { terminology  }{ 术语表         },
+   %     { toc          }{ 目录           },
+   %     { ack          }{ 致谢           },
+   %     { pdf_creator  }{ 西北农林科技大学LaTeX模板 }
+     { practicetime}{ 实践日期 },  % 新增，根据C++课程实践进行的针对性修改
+   }
+   {
+     % 创建标签tl常量
+     \tl_const:cx { c__nwafu_label_ \use_i:nn #1 _tl } { \use_ii:nn #1 }
+     % 创建内容数据tl变量
+     \tl_new:c { l__nwafu_info_ \use_i:nn #1 _tl }
+   }
+% 如有需要，可以按此模式定义新的tl常量和tl变量，如果需要，也可以按如下形式定义数据收集选项：
+ \keys_define:nn { nwafu / info }
+  {
+    practicetime .tl_set:N  = \l__nwafu_info_practicetime_tl,     % 新增，根据C++课程实践进行的针对性修改
+  }
+\clist_const:Nn \c__nwafu_cover_info_clist
+  {
+    { \c__nwafu_label_student_id_tl   } { \l__nwafu_info_student_id_tl   } { 0 },
+    { \c__nwafu_label_author_tl       } { \l__nwafu_info_author_tl       } { 0 },
+    { \c__nwafu_label_major_tl        } { \l__nwafu_info_major_tl        } { 0 },
+    { \c__nwafu_label_class_id_tl     } { \l__nwafu_info_class_id_tl     } { 0 },
+    { \c__nwafu_label_supervisor_tl   } { \l__nwafu_info_supervisor_tl   } { 1 },
+    %{ \c__nwafu_label_cosupervisor_tl } { \l__nwafu_info_cosupervisor_tl } { 1 },
+    { \c__nwafu_label_practicetime_tl } { \l__nwafu_info_practicetime_tl } { 0 },   % 新增，根据C++课程实践进行的针对性修改
+  }
+
+% 封面元素声明驱动数据clist列表
+%   字段格式：{<名称>}{<内容>}{<格式>}{<底部间距>}{<对齐方式>}
+%   对齐方式: left, right, center, normal
+% 说明：
+%   如不需要底部间距可使用\c_zero_skip，但不可留白，否则会造成编译错误。
+%   各字段的内容可以使用内部函数或常量或变量，也可以直接填写内容
+\clist_const:Nn \c__nwafu_cover_elements_clist
+  {
+    { logo      } { \__nwafu_cover_logo: }
+                  {  }
+                  { -65 pt plus 0.3 fill }
+                  { center },
+    { depart    } { \__nwafu_department_name: }
+                  { \bfseries \nwafu@kai \zihao { 2 } }
+                  { -25 pt }
+                  { center },
+    { subject   } { \__nwafu_subject_name: }
+                  { \bfseries \nwafu@kai \zihao { 1 } }
+                  { 15 pt plus 0.3 fill }
+                  { center },
+    % { title     } { \c__nwafu_label_title_tl \c__nwafu_fwid_colon_tl \l__nwafu_info_title_tl }              
+    { title     } { \l__nwafu_info_title_tl }  % 新增，根据C++课程实践进行的针对性修改
+                  { \sffamily \zihao { 2 } }
+                  { 25 pt plus 0.3 fill }
+                  { center },
+    { info      } { \__nwafu_cover_info: }
+                  { \__nwafu_line_spread:n {1.60} \nwafu@hei \zihao { 3 } }
+                  { 53 pt plus 0.3 fill }
+                  { center },
+    { date      } { \l__nwafu_info_date_tl }
+                  { \nwafu@hei \large }
+                  { 0 pt plus 0.3 fill }
+                  { center },
+  }
+
+% 封面构成元素名称驱动数据tl常量
+% 各元素名称需是元素声明驱动数据clist列表中声明的元素名称
+\tl_const:Nn \c__nwafu_cover_contents_tl
+  { logo, depart, subject, title, info, date }
+
+% 摘要、目录、插图与附表目录、符号表、术语表等前料排版流程
+%   可以根据需要通过注释以取消输出的内容
+\clist_const:Nn \c__nwafu_frontmatter_clist
+  {
+   % { \__nwafu_front_component_abstract:    }, % 摘要
+     { \__nwafu_front_component_toc:         }, % 目录
+   % { \__nwafu_front_component_figtab:      }, % 插图与附表清单
+   % { \__nwafu_front_component_notation:    }, % 符号表
+   % { \__nwafu_front_component_terminology: }, % 术语表
+  }
+
+% logo文件名(包含路径)及缩放系数
+\keys_set:nn { nwafu }
+  {
+    style   / logo            = { logo/nwafu-bar.pdf },
+    style   / logo-size       = 0.35,
+  }
