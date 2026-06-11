@@ -14,6 +14,7 @@
 #include "Viewer.h"
 
 #include <cstdio>
+#include <cstdlib>
 #include <cstring>
 #include <string>
 #include <vector>
@@ -49,20 +50,58 @@ static bool saveScreenshotPPM(const std::string& path, int w, int h) {
     return true;
 }
 
+// 只打包界面实际用到的中文字形，避免完整 CJK 字库让字体图集过大。
+static const ImWchar* buildGuiGlyphRanges() {
+    static ImVector<ImWchar> ranges;
+    if (!ranges.empty()) return ranges.Data;
+
+    ImGuiIO& io = ImGui::GetIO();
+    ImFontGlyphRangesBuilder builder;
+    builder.AddRanges(io.Fonts->GetGlyphRangesDefault());
+    builder.AddRanges(io.Fonts->GetGlyphRangesChineseSimplifiedCommon());
+    builder.AddText(u8"3D 点云目标分割系统");
+    builder.AddText(u8"控制面板 选题读取估计法向量由粗到细区域生长");
+    builder.AddText(u8"载入文件内置演示场景参数近邻数层最夹角度");
+    builder.AddText(u8"种子曲率阈值最小段点运行显示结果高度纯色着色方式");
+    builder.AddText(u8"迭代第段点大小背景灰度视角正视侧视俯视");
+    builder.AddText(u8"左键拖动旋转右键平移滚轮缩放状态帧率完成失败");
+    builder.AddText(u8"已载入点云演示场景点数分割各层段数保存截图创建窗口初始化错误可用显示器");
+    builder.BuildRanges(&ranges);
+    return ranges.Data;
+}
+
 // 尝试加载一个中文字体，让 ImGui 能显示中文（找不到就用默认字体）
 static void setupFont() {
     ImGuiIO& io = ImGui::GetIO();
-    const char* candidates[] = {
+    std::vector<std::string> candidates = {
+        // macOS
         "/System/Library/Fonts/PingFang.ttc",
+        "/System/Library/Fonts/Language Support/PingFang.ttc",
         "/System/Library/Fonts/STHeiti Light.ttc",
+        "/System/Library/Fonts/STHeiti Medium.ttc",
         "/System/Library/Fonts/Hiragino Sans GB.ttc",
+        "/Library/Fonts/Arial Unicode.ttf",
+        // Linux
+        "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc",
+        "/usr/share/fonts/truetype/noto/NotoSansCJK-Regular.ttc",
     };
-    for (const char* f : candidates) {
+
+    if (const char* windir = std::getenv("WINDIR")) {
+        const std::string fontDir = std::string(windir) + "/Fonts/";
+        candidates.push_back(fontDir + "msyh.ttc");
+        candidates.push_back(fontDir + "simhei.ttf");
+        candidates.push_back(fontDir + "simsun.ttc");
+    }
+    candidates.push_back("C:/Windows/Fonts/msyh.ttc");
+    candidates.push_back("C:/Windows/Fonts/simhei.ttf");
+    candidates.push_back("C:/Windows/Fonts/simsun.ttc");
+
+    for (const std::string& f : candidates) {
         std::ifstream test(f);
         if (test.good()) {
             io.Fonts->AddFontFromFileTTF(
-                f, 18.0f, nullptr,
-                io.Fonts->GetGlyphRangesChineseSimplifiedCommon());
+                f.c_str(), 18.0f, nullptr,
+                buildGuiGlyphRanges());
             return;
         }
     }

@@ -1,5 +1,9 @@
 # 构建产物
 build/
+cmake-build-*/
+CMakeFiles/
+CMakeCache.txt
+compile_commands.json
 *.o
 *.obj
 *.a
@@ -8,6 +12,7 @@ build/
 *.exe
 
 # 运行/测试产生的输出
+imgui.ini
 *.ply
 !data/*.ply
 test_roundtrip.ply
@@ -17,6 +22,8 @@ segmented.ply
 .DS_Store
 .vscode/
 .idea/
+*.layout
+*.depend
 
 # LaTeX 中间产物
 *.aux
