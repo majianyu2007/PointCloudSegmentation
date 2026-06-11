@@ -72,3 +72,16 @@ cd build && ctest --output-on-failure
 | `--curv` | 种子曲率阈值 | 0.08 |
 | `--min` | 最小段点数（更小的段视为噪声） | 30 |
 | `-o` | 输出 ply 路径 | segmented.ply |
+
+## 课程交付物
+
+- `docs/实施计划书.md` —— 实施计划书（附件1 内容）。
+- `docs/report/` —— LaTeX 实习报告（nwafupaper 模板，XeLaTeX 编译，产物 `main.pdf`，26 页），
+  编译方法见 `docs/report/README.md`。
+- `docs/figures/` —— 图形界面实际渲染的分割结果与法向量插图。
+
+## AI 使用说明
+
+本项目在开发中使用了 Claude Code（Anthropic Claude Opus 4.8）辅助编码、调试与文档撰写；
+算法选型、参数取值、测试断言与结果分析均经本人核对确定。详见实习报告“AI 使用情况”一节。
+
