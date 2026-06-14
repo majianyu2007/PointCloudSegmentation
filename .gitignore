@@ -4,6 +4,8 @@ cmake-build-*/
 CMakeFiles/
 CMakeCache.txt
 compile_commands.json
+downloads/
+external_datasets/
 *.o
 *.obj
 *.a
@@ -15,6 +17,7 @@ compile_commands.json
 imgui.ini
 *.ply
 !data/*.ply
+!data/**/*.ply
 test_roundtrip.ply
 segmented.ply
 

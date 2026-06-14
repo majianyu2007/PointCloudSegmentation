@@ -28,6 +28,7 @@ public:
 
     // 重新跑分割（用当前参数）
     void runSegmentation();
+    bool exportCurrentSegmentation(const std::string& path);
 
     // 每帧渲染点云
     void render(int fbWidth, int fbHeight);
@@ -60,6 +61,7 @@ private:
     pcseg::SegParams params_;
     std::string status_ = "未载入点云";
     char pathBuf_[512] = "data/scene.ply";
+    char exportPathBuf_[512] = "segmented.ply";
 
     // --- 显示状态 ---
     ColorMode colorMode_ = ColorMode::Segment;

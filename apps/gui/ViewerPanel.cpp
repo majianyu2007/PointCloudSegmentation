@@ -10,9 +10,49 @@
 #include "pcseg/PointCloudIO.h"
 #include "pcseg/Synthetic.h"
 
+#include <filesystem>
 #include <string>
+#include <vector>
 
 using namespace pcseg;
+
+namespace {
+
+std::vector<std::filesystem::path> candidateRoots() {
+    std::vector<std::filesystem::path> roots;
+
+    // CMake/clang normally expands __FILE__ to the source path. Deriving the
+    // project root from it keeps GUI relative paths working even if the app is
+    // launched from a different working directory.
+    std::filesystem::path sourceFile(__FILE__);
+    if (sourceFile.is_absolute())
+        roots.push_back(sourceFile.parent_path().parent_path().parent_path());
+    std::filesystem::path cwd = std::filesystem::current_path();
+    roots.push_back(cwd);
+    for (std::filesystem::path p = cwd; p.has_parent_path(); p = p.parent_path()) {
+        if (std::filesystem::exists(p / "CMakeLists.txt") &&
+            std::filesystem::exists(p / "data")) {
+            roots.push_back(p);
+            break;
+        }
+        if (p == p.parent_path()) break;
+    }
+    return roots;
+}
+
+std::string resolvePointCloudPath(const std::string& input) {
+    std::filesystem::path p(input);
+    if (std::filesystem::exists(p)) return p.string();
+    if (p.is_absolute()) return input;
+
+    for (const auto& root : candidateRoots()) {
+        std::filesystem::path candidate = root / p;
+        if (std::filesystem::exists(candidate)) return candidate.string();
+    }
+    return input;
+}
+
+} // namespace
 
 void Viewer::loadDemoScene() {
     LabeledCloud lc = makeScene();
@@ -28,8 +68,10 @@ void Viewer::loadDemoScene() {
 bool Viewer::loadFromFile(const std::string& path) {
     PointCloud tmp;
     std::string err;
-    if (!loadPointCloud(path, tmp, err)) {
-        status_ = "载入失败: " + err;
+    std::string resolvedPath = resolvePointCloudPath(path);
+    if (!loadPointCloud(resolvedPath, tmp, err)) {
+        status_ = "载入失败: " + err + "（当前目录: " +
+                  std::filesystem::current_path().string() + "）";
         return false;
     }
     cloud_ = tmp;
@@ -38,7 +80,7 @@ bool Viewer::loadFromFile(const std::string& path) {
     fitCameraToCloud();
     uploadPositions();
     runSegmentation();
-    status_ = "已载入 " + path + "，点数 " + std::to_string(cloud_.size());
+    status_ = "已载入 " + resolvedPath + "，点数 " + std::to_string(cloud_.size());
     return true;
 }
 
@@ -115,6 +157,8 @@ void Viewer::drawUI() {
 
     if (ImGui::SliderFloat(u8"点大小", &pointSize_, 1.0f, 12.0f, "%.1f")) {}
     ImGui::SliderFloat(u8"背景灰度", &bgGray_, 0.0f, 1.0f, "%.2f");
+    ImGui::InputText(u8"导出路径", exportPathBuf_, sizeof(exportPathBuf_));
+    if (ImGui::Button(u8"导出当前分割")) exportCurrentSegmentation(exportPathBuf_);
     ImGui::Separator();
 
     // --- 视角 ---

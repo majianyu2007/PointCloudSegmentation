@@ -3,6 +3,7 @@
 #include "GLHeaders.h"
 
 #include "pcseg/Palette.h"
+#include "pcseg/PointCloudIO.h"
 
 #include <cstdio>
 #include <cmath>
@@ -145,6 +146,34 @@ void Viewer::updateColors() {
     glBindBuffer(GL_ARRAY_BUFFER, vboCol_);
     glBufferData(GL_ARRAY_BUFFER, colors.size() * sizeof(Vec3),
                  colors.data(), GL_STATIC_DRAW);
+}
+
+bool Viewer::exportCurrentSegmentation(const std::string& path) {
+    if (cloud_.empty()) {
+        status_ = "导出失败: 未载入点云";
+        return false;
+    }
+    if (!hasSegmentation_ || currentLevel_ < 0 || currentLevel_ >= seg_.levels()) {
+        status_ = "导出失败: 没有可导出的分割结果";
+        return false;
+    }
+
+    const std::vector<int>& labels = seg_.levelLabels[currentLevel_];
+    std::vector<unsigned char> r(cloud_.size()), g(cloud_.size()), b(cloud_.size());
+    for (std::size_t i = 0; i < cloud_.size(); ++i) {
+        Vec3 c = colorForLabel(labels[i]);
+        r[i] = static_cast<unsigned char>(c.x * 255.0f);
+        g[i] = static_cast<unsigned char>(c.y * 255.0f);
+        b[i] = static_cast<unsigned char>(c.z * 255.0f);
+    }
+
+    std::string err;
+    if (!savePLYColored(path, cloud_, r, g, b, err)) {
+        status_ = "导出失败: " + err;
+        return false;
+    }
+    status_ = "已导出第 " + std::to_string(currentLevel_) + " 层分割结果到 " + path;
+    return true;
 }
 
 void Viewer::render(int fbWidth, int fbHeight) {
