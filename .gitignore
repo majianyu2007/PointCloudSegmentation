@@ -1,47 +1,17 @@
-# 构建产物
-build/
-cmake-build-*/
-CMakeFiles/
-CMakeCache.txt
-compile_commands.json
-downloads/
-external_datasets/
-*.o
-*.obj
-*.a
-*.dylib
-*.so
-*.exe
-
-# 运行/测试产生的输出
-imgui.ini
-*.ply
-!data/*.ply
-!data/**/*.ply
-test_roundtrip.ply
-segmented.ply
-
-# 编辑器/系统
+# 系统/编辑器
 .DS_Store
 .vscode/
 .idea/
-*.layout
-*.depend
 
-# LaTeX 中间产物
-*.aux
+# 本地预览或临时输出
+build/
+downloads/
+external_datasets/
 *.log
-*.out
-*.toc
-*.synctex.gz
-*.thm
-*.fls
-*.fdb_latexmk
-*.bbl
-*.blg
-*.bcf
-*.run.xml
-*.xdv
-*.idx
-*.lof
-*.lot
+imgui.ini
+segmented*.ply
+test_roundtrip.ply
+
+# Python 工具缓存（若临时使用脚本）
+__pycache__/
+*.pyc

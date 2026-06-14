@@ -21,16 +21,4 @@ ASCII PLY，仅保留 `x/y/z` 顶点坐标和统一 RGB 颜色，不包含 mesh 
 | `stanford_dragon_res2.ply` | 100,250 | 大规模真实模型压力测试 |
 | `stanford_armadillo_50000.ply` | 50,000 | 从 Armadillo 抽样出的压力测试 |
 
-示例命令：
-
-```bash
-./build/pcseg_cli data/real/stanford_bunny.ply -o build/stanford_bunny_segmented.ply
-./build/pcseg_cli data/real/stanford_dragon_res2.ply -o build/stanford_dragon_res2_segmented.ply
-./build/apps/gui/pcseg_gui data/real/stanford_dragon_res3.ply
-```
-
-如需重新转换或抽样：
-
-```bash
-python3 tools/prepare_pointcloud.py input.ply output.ply --max-points 50000
-```
+这些文件会出现在 Web 页面左侧“载入点云”的下拉框中。选择文件并点击“载入文件”即可在浏览器端查看和分割。

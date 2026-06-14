@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>3D 点云目标分割系统</title>
+  <link rel="stylesheet" href="web/styles.css">
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://unpkg.com/three@0.165.0/build/three.module.js",
+        "three/addons/": "https://unpkg.com/three@0.165.0/examples/jsm/"
+      }
+    }
+  </script>
+</head>
+<body>
+  <div id="titlebar">3D 点云目标分割系统</div>
+  <main id="app">
+    <aside id="panel">
+      <h1>▼ 控制面板 / Control Panel</h1>
+      <p class="desc">选题56：3D点云目标分割。读取点云→估计法向量→由粗到细区域生长分割。</p>
+
+      <section>
+        <h2>载入点云</h2>
+        <select id="dataset"></select>
+        <button id="loadDataset">载入文件</button>
+        <input id="localFile" type="file" accept=".ply,.xyz,.txt">
+      </section>
+
+      <section>
+        <h2>分割参数</h2>
+        <label><input id="k" type="range" min="4" max="40" step="1"><span>近邻数 k</span><b id="kVal"></b></label>
+        <label><input id="levels" type="range" min="1" max="5" step="1"><span>层数 levels</span><b id="levelsVal"></b></label>
+        <label><input id="coarse" type="range" min="5" max="60" step="0.1"><span>最粗夹角(度)</span><b id="coarseVal"></b></label>
+        <label><input id="fine" type="range" min="2" max="45" step="0.1"><span>最细夹角(度)</span><b id="fineVal"></b></label>
+        <label><input id="curv" type="range" min="0.005" max="0.3" step="0.001"><span>种子曲率阈值</span><b id="curvVal"></b></label>
+        <label><input id="minCluster" type="range" min="1" max="300" step="1"><span>最小段点数</span><b id="minClusterVal"></b></label>
+        <button id="run">运行分割</button>
+      </section>
+
+      <section>
+        <h2>显示</h2>
+        <select id="colorMode">
+          <option value="segment">分割结果</option>
+          <option value="normal">法向量</option>
+          <option value="height">高度</option>
+          <option value="flat">纯色</option>
+        </select>
+        <label><input id="level" type="range" min="0" max="0" step="1"><span>迭代层(粗→细)</span><b id="levelVal">0</b></label>
+        <p id="levelInfo">第 0 层，段数 = 0</p>
+        <label><input id="pointSize" type="range" min="1" max="12" step="0.5" value="3"><span>点大小</span><b id="pointSizeVal">3.0</b></label>
+        <label><input id="bgGray" type="range" min="0" max="1" step="0.01" value="0.12"><span>背景灰度</span><b id="bgGrayVal">0.12</b></label>
+        <input id="exportName" value="segmented_web.ply">
+        <button id="export">导出当前分割</button>
+      </section>
+
+      <section>
+        <h2>视角</h2>
+        <button id="front">正视</button>
+        <button id="side">侧视</button>
+        <button id="top">俯视</button>
+        <p>左键拖动旋转，右键拖动平移，滚轮缩放。</p>
+      </section>
+      <footer id="status">状态: 未载入点云</footer>
+    </aside>
+    <div id="viewer"></div>
+  </main>
+  <script type="module" src="web/app.js"></script>
+</body>
+</html>

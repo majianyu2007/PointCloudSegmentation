@@ -1,6 +1,6 @@
 # 数据说明与推荐分割参数
 
-本目录包含项目演示点云、合成压力测试点云和真实公开点云样例。所有文件均为当前程序可直接读取的 PLY 点云。除 `scene_segmented.ply` 这类示例结果外，输入点云使用统一灰色，颜色由程序分割后生成。不同文件的点密度、噪声和几何结构不同，建议按下表设置分割参数。
+本目录包含 Web 版下拉框可直接选择的点云文件。所有文件均为浏览器端程序可读取的 ASCII PLY 点云。除 `scene_segmented.ply` 这类示例结果外，输入点云使用统一灰色，颜色由程序分割后生成。
 
 推荐参数按“彩色覆盖率较高、段数不过度碎片化、运行时间可接受”的标准选取。彩色覆盖率表示最终导出层中非灰色点的比例；灰色点通常是被过滤的小段或噪声点。
 
@@ -23,25 +23,7 @@
 
 ## 使用方式
 
-GUI 中在“载入点云”输入框填入表中的路径，例如：
-
-```text
-data/stress_complex_35200.ply
-```
-
-然后按表格设置 `k`、`levels`、`最粗夹角`、`最细夹角`、`种子曲率阈值`、`最小段点数`，点击“运行分割”。
-
-命令行运行示例：
-
-```bash
-./build/pcseg_cli data/stress_complex_35200.ply \
-  -k 20 --levels 3 --coarse 32 --fine 12 --curv 0.10 --min 80 \
-  -o build/stress_complex_segmented.ply
-
-./build/pcseg_cli data/real/stanford_dragon_res2.ply \
-  -k 16 --levels 3 --coarse 28 --fine 8 --curv 0.08 --min 80 \
-  -o build/stanford_dragon_res2_segmented.ply
-```
+Web 页面左侧“载入点云”区域提供数据集下拉框。选择文件后点击“载入文件”，页面会自动套用表中的推荐参数；也可以手动调整参数后点击“运行分割”。
 
 ## 调参原则
 
