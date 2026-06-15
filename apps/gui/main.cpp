@@ -156,6 +156,10 @@ int main(int argc, char** argv) {
     ImGui::StyleColorsDark();
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init("#version 330 core");
+    if (!loadPcsegGLFunctions()) {
+        std::fprintf(stderr, "OpenGL 函数加载失败。\n");
+        return 1;
+    }
 
     Viewer viewer;
     state.viewer = &viewer;

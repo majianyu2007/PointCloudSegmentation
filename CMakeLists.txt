@@ -1,14 +1,19 @@
 cmake_minimum_required(VERSION 3.16)
-project(PointCloudSegmentation LANGUAGES CXX)
+project(PointCloudSegmentation LANGUAGES C CXX)
 
 # 统一用 C++17
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
+
 if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Release)
 endif()
+
+option(PCSEG_BUILD_GUI "Build the OpenGL/ImGui viewer when dependencies are available" ON)
+option(PCSEG_FETCH_GLFW "Download GLFW with CMake FetchContent when GLFW is not installed" ON)
 
 # ----------------------------------------------------------------------------
 # 核心库：点云数据结构 + KD树 + 法向量 + 分割算法 + 文件IO。纯 C++，不依赖任何 GUI。
@@ -42,4 +47,6 @@ add_test(NAME pcseg_tests COMMAND pcseg_tests)
 # 图形界面（GLFW + OpenGL + Dear ImGui）。
 # 只有在能找到 GLFW、且 third_party/imgui 存在时才编译，缺了不影响核心库和测试。
 # ----------------------------------------------------------------------------
-add_subdirectory(apps/gui)
+if(PCSEG_BUILD_GUI)
+    add_subdirectory(apps/gui)
+endif()

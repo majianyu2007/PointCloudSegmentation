@@ -1,22 +1,60 @@
 # 图形界面子工程。依赖 GLFW、系统 OpenGL，以及随仓库附带的 Dear ImGui 源码。
-# 任一缺失就跳过 GUI（核心库、命令行、测试仍可正常构建）。
+# 优先使用本机安装的 GLFW；找不到时可通过 FetchContent 自动下载。
 
 set(IMGUI_DIR ${CMAKE_SOURCE_DIR}/third_party/imgui)
 
-# 找 GLFW：优先用 Homebrew 安装的版本
-find_package(glfw3 QUIET)
-find_library(GLFW_LIB NAMES glfw glfw3
-    PATHS /usr/local/lib /usr/local/opt/glfw/lib /opt/homebrew/lib)
-find_path(GLFW_INC GLFW/glfw3.h
-    PATHS /usr/local/include /usr/local/opt/glfw/include /opt/homebrew/include)
+set(PCSEG_GLFW_TARGET "")
+set(PCSEG_GLFW_LIB "")
+set(PCSEG_GLFW_INC "")
+
+set(PCSEG_GLFW_HINTS)
+if(DEFINED ENV{GLFW_ROOT})
+    list(APPEND PCSEG_GLFW_HINTS "$ENV{GLFW_ROOT}")
+endif()
+if(DEFINED GLFW_ROOT)
+    list(APPEND PCSEG_GLFW_HINTS "${GLFW_ROOT}")
+endif()
+
+find_package(glfw3 CONFIG QUIET)
+if(TARGET glfw)
+    set(PCSEG_GLFW_TARGET glfw)
+elseif(TARGET glfw3)
+    set(PCSEG_GLFW_TARGET glfw3)
+else()
+    find_library(PCSEG_GLFW_LIB NAMES glfw glfw3
+        HINTS ${PCSEG_GLFW_HINTS}
+        PATH_SUFFIXES lib lib64
+        PATHS /usr/local/lib /usr/local/opt/glfw/lib /opt/homebrew/lib)
+    find_path(PCSEG_GLFW_INC GLFW/glfw3.h
+        HINTS ${PCSEG_GLFW_HINTS}
+        PATH_SUFFIXES include
+        PATHS /usr/local/include /usr/local/opt/glfw/include /opt/homebrew/include)
+endif()
+
+if(NOT PCSEG_GLFW_TARGET AND NOT (PCSEG_GLFW_LIB AND PCSEG_GLFW_INC) AND PCSEG_FETCH_GLFW)
+    message(STATUS "未找到本机 GLFW，使用 FetchContent 下载 GLFW 3.4")
+    include(FetchContent)
+    set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
+    set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+    set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+    set(GLFW_INSTALL OFF CACHE BOOL "" FORCE)
+    FetchContent_Declare(glfw
+        URL https://github.com/glfw/glfw/archive/refs/tags/3.4.zip
+        DOWNLOAD_EXTRACT_TIMESTAMP FALSE)
+    FetchContent_MakeAvailable(glfw)
+    if(TARGET glfw)
+        set(PCSEG_GLFW_TARGET glfw)
+    endif()
+endif()
 
 set(GUI_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/GLCompat.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Viewer.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ViewerPanel.cpp
 )
 
-if(EXISTS ${IMGUI_DIR}/imgui.cpp AND (TARGET glfw OR (GLFW_LIB AND GLFW_INC))
+if(EXISTS ${IMGUI_DIR}/imgui.cpp AND (PCSEG_GLFW_TARGET OR (PCSEG_GLFW_LIB AND PCSEG_GLFW_INC))
    AND EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp)
     message(STATUS "找到 GLFW 与 ImGui，启用图形界面 pcseg_gui")
 
@@ -31,15 +69,21 @@ if(EXISTS ${IMGUI_DIR}/imgui.cpp AND (TARGET glfw OR (GLFW_LIB AND GLFW_INC))
     )
     target_include_directories(pcseg_gui PRIVATE
         ${IMGUI_DIR} ${IMGUI_DIR}/backends)
-    if(GLFW_INC)
-        target_include_directories(pcseg_gui PRIVATE ${GLFW_INC})
+    if(WIN32)
+        target_compile_definitions(pcseg_gui PRIVATE WIN32_LEAN_AND_MEAN NOMINMAX)
+    endif()
+    if(PCSEG_GLFW_INC)
+        target_include_directories(pcseg_gui PRIVATE ${PCSEG_GLFW_INC})
     endif()
     target_link_libraries(pcseg_gui PRIVATE pcseg_core)
 
-    if(TARGET glfw)
-        target_link_libraries(pcseg_gui PRIVATE glfw)
+    if(PCSEG_GLFW_TARGET)
+        target_link_libraries(pcseg_gui PRIVATE ${PCSEG_GLFW_TARGET})
     else()
-        target_link_libraries(pcseg_gui PRIVATE ${GLFW_LIB})
+        target_link_libraries(pcseg_gui PRIVATE ${PCSEG_GLFW_LIB})
+        if(WIN32)
+            target_link_libraries(pcseg_gui PRIVATE gdi32 user32 shell32)
+        endif()
     endif()
 
     if(APPLE)

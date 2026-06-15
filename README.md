@@ -41,8 +41,8 @@ PointCloudSegmentation/
 
 ## 构建与运行
 
-依赖：CMake ≥ 3.16、支持 C++17 的编译器。图形界面另需 GLFW 与 OpenGL（macOS 自带 OpenGL，
-`brew install glfw`；ImGui 源码放在 `third_party/imgui/`）。
+依赖：CMake ≥ 3.16、支持 C++17 的编译器。图形界面另需 OpenGL；GLFW 会优先使用本机安装版本，
+找不到时默认由 CMake FetchContent 自动下载 GLFW 3.4。ImGui 源码已放在 `third_party/imgui/`。
 
 ```bash
 cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
@@ -61,20 +61,34 @@ cmake --build build -j
 cd build && ctest --output-on-failure
 ```
 
+### Windows
+
+推荐使用 CMake + Ninja，尤其当项目路径含中文时，Ninja 比 `MinGW Makefiles` 更稳定。
+
+```bat
+cmake -S . -B build-ninja -G Ninja -DCMAKE_BUILD_TYPE=Release
+cmake --build build-ninja
+
+build-ninja\pcseg_cli.exe --demo -o build-ninja\segmented_demo.ply
+build-ninja\apps\gui\pcseg_gui.exe
+ctest --test-dir build-ninja --output-on-failure
+```
+
+若机器没有预装 GLFW，第一次配置会自动下载；若网络不可用，可加 `-DPCSEG_BUILD_GUI=OFF` 只构建
+核心库、命令行和测试，或先手动安装 GLFW 后通过 `GLFW_ROOT` / `-DGLFW_ROOT=...` 指定路径。
+
 ### Windows / Code::Blocks
 
-推荐仍然走 CMake，让它生成 Code::Blocks 工程文件，避免手工维护 `.cbp` 后源文件列表不同步。
-
-1. 安装 MinGW-w64、CMake、Code::Blocks，以及 GLFW 开发库。
-2. 确认 Code::Blocks 的编译器使用支持 C++17 的 MinGW-w64。
-3. 在项目根目录生成工程：
+如课程环境要求 Code::Blocks，也建议让 CMake 生成工程文件，避免手工维护 `.cbp` 后源文件列表不同步。
+确认 Code::Blocks 的编译器使用支持 C++17 的 MinGW-w64 后，在项目根目录生成工程：
 
 ```bat
 cmake -S . -B build-codeblocks -G "CodeBlocks - MinGW Makefiles" -DCMAKE_BUILD_TYPE=Release
 ```
 
-生成后打开 `build-codeblocks/PointCloudSegmentation.cbp` 即可。若本机暂未配置 GLFW，CMake 会跳过
-`pcseg_gui`，但 `pcseg_core`、`pcseg_cli` 和 `pcseg_tests` 仍可构建。源码请保持 UTF-8 编码。
+生成后打开 `build-codeblocks/PointCloudSegmentation.cbp` 即可。若本机暂未配置 GLFW 且不希望自动下载，
+可加 `-DPCSEG_FETCH_GLFW=OFF`；此时 GUI 会跳过，但 `pcseg_core`、`pcseg_cli` 和 `pcseg_tests` 仍可构建。
+源码请保持 UTF-8 编码。
 
 ## 命令行参数
 
