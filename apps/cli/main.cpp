@@ -1,11 +1,3 @@
-// 命令行工具：读入点云 -> 估计法向量 -> 由粗到细分割 -> 打印统计 -> 导出着色点云。
-// 没有图形界面也能完整跑通整套算法，方便测试和批处理。
-//
-// 用法示例：
-//   pcseg_cli --demo -o out.ply             用内置演示场景跑一遍，结果写到 out.ply
-//   pcseg_cli input.ply -o out.ply          读 input.ply
-//   pcseg_cli input.xyz --levels 3 -k 16 --coarse 30 --fine 10 --min 30
-
 #include <iostream>
 #include <string>
 #include <vector>
@@ -38,12 +30,11 @@ static void printUsage() {
 int main(int argc, char** argv) {
     std::string inputPath;
     std::string outputPath = "segmented.ply";
-    std::string saveInputPath;  // 把（生成或读入的）原始点云另存一份，方便界面加载
+    std::string saveInputPath;
     bool useDemo = false;
-    int exportLevel = -1;  // -1 表示最后一层
+    int exportLevel = -1;
     SegParams params;
 
-    // 简单地手工解析命令行参数
     for (int i = 1; i < argc; ++i) {
         std::string a = argv[i];
         auto next = [&](const char* name) -> std::string {
@@ -65,7 +56,6 @@ int main(int argc, char** argv) {
         else { std::cerr << "未知参数: " << a << "\n"; printUsage(); return 1; }
     }
 
-    // 1) 准备点云
     PointCloud cloud;
     if (useDemo || inputPath.empty()) {
         std::cout << "[1/4] 生成内置演示场景...\n";
@@ -81,7 +71,6 @@ int main(int argc, char** argv) {
     }
     std::cout << "      点数: " << cloud.size() << "\n";
 
-    // 可选：把原始点云另存一份（统一存成白色 ascii PLY），供界面或报告使用
     if (!saveInputPath.empty()) {
         std::vector<unsigned char> w(cloud.size(), 220);
         std::string e;
@@ -91,14 +80,12 @@ int main(int argc, char** argv) {
             std::cerr << "      保存原始点云失败: " << e << "\n";
     }
 
-    // 2) 建 KD 树 + 估计法向量
     std::cout << "[2/4] 建立 KD 树并估计法向量 (k=" << params.k << ") ...\n";
     auto t0 = std::chrono::steady_clock::now();
     KdTree tree;
     tree.build(cloud.points);
     estimateNormals(cloud, tree, params.k);
 
-    // 3) 由粗到细分割
     std::cout << "[3/4] 由粗到细区域生长分割 (levels=" << params.levels
               << ", coarse=" << params.coarseSmoothnessDeg
               << ", fine=" << params.fineSmoothnessDeg << ") ...\n";
@@ -106,7 +93,6 @@ int main(int argc, char** argv) {
     auto t1 = std::chrono::steady_clock::now();
     double ms = std::chrono::duration<double, std::milli>(t1 - t0).count();
 
-    // 打印每一层的段数
     std::cout << "      各层段数:";
     for (int L = 0; L < result.levels(); ++L) {
         std::cout << " L" << L << "=" << result.segmentCount[L];
@@ -118,7 +104,6 @@ int main(int argc, char** argv) {
         return 1;
     }
 
-    // 4) 导出指定层的着色点云
     int lvl = (exportLevel < 0 || exportLevel >= result.levels())
                   ? result.levels() - 1 : exportLevel;
     const std::vector<int>& labels = result.levelLabels[lvl];

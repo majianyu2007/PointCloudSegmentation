@@ -1,7 +1,3 @@
-// Viewer 类的“控制 / 数据流 / 界面”部分（渲染部分见 Viewer.cpp）。
-// 拆成两个文件是为了每个源文件不超过 200 行，并把“OpenGL 渲染”与
-// “点云载入 + 参数控制 + ImGui 面板”两类关注点分开。
-
 #include "Viewer.h"
 
 #include "imgui.h"
@@ -21,9 +17,6 @@ namespace {
 std::vector<std::filesystem::path> candidateRoots() {
     std::vector<std::filesystem::path> roots;
 
-    // CMake/clang normally expands __FILE__ to the source path. Deriving the
-    // project root from it keeps GUI relative paths working even if the app is
-    // launched from a different working directory.
     std::filesystem::path sourceFile(__FILE__);
     if (sourceFile.is_absolute())
         roots.push_back(sourceFile.parent_path().parent_path().parent_path());
@@ -86,7 +79,6 @@ bool Viewer::loadFromFile(const std::string& path) {
 
 void Viewer::runSegmentation() {
     if (cloud_.empty()) return;
-    // 参数里改了 k 的话，法向量也要重算
     estimateNormals(cloud_, tree_, params_.k);
     seg_ = segment(cloud_, tree_, params_);
     hasSegmentation_ = seg_.levels() > 0;
@@ -118,7 +110,6 @@ void Viewer::drawUI() {
     ImGui::TextWrapped(u8"选题56：3D点云目标分割。读取点云→估计法向量→由粗到细区域生长分割。");
     ImGui::Separator();
 
-    // --- 载入 ---
     ImGui::TextUnformatted(u8"载入点云");
     ImGui::InputText("##path", pathBuf_, sizeof(pathBuf_));
     ImGui::SameLine();
@@ -126,7 +117,6 @@ void Viewer::drawUI() {
     if (ImGui::Button(u8"载入内置演示场景")) loadDemoScene();
     ImGui::Separator();
 
-    // --- 分割参数 ---
     ImGui::TextUnformatted(u8"分割参数");
     ImGui::SliderInt(u8"近邻数 k", &params_.k, 4, 40);
     ImGui::SliderInt(u8"层数 levels", &params_.levels, 1, 5);
@@ -137,7 +127,6 @@ void Viewer::drawUI() {
     if (ImGui::Button(u8"运行分割")) runSegmentation();
     ImGui::Separator();
 
-    // --- 显示 ---
     ImGui::TextUnformatted(u8"显示");
     const char* modes[] = {u8"分割结果", u8"法向量", u8"高度", u8"纯色"};
     int mode = (int)colorMode_;
@@ -146,7 +135,6 @@ void Viewer::drawUI() {
         updateColors();
     }
 
-    // 迭代回放：在各层之间切换，看由粗到细的过程
     if (hasSegmentation_ && seg_.levels() > 1) {
         int maxLevel = seg_.levels() - 1;
         if (ImGui::SliderInt(u8"迭代层(粗→细)", &currentLevel_, 0, maxLevel)) {
@@ -161,7 +149,6 @@ void Viewer::drawUI() {
     if (ImGui::Button(u8"导出当前分割")) exportCurrentSegmentation(exportPathBuf_);
     ImGui::Separator();
 
-    // --- 视角 ---
     ImGui::TextUnformatted(u8"视角");
     if (ImGui::Button(u8"正视")) camera_.viewFront();
     ImGui::SameLine();

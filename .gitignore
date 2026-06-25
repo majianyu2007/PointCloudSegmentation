@@ -13,6 +13,9 @@ external_datasets/
 *.dylib
 *.so
 *.exe
+!dist/**
+!tools/**
+!third_party/glfw/**
 
 # 运行/测试产生的输出
 imgui.ini

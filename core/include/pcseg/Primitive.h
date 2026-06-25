@@ -10,12 +10,7 @@
 
 namespace pcseg {
 
-// 几何体抽象基类。
-// 合成点云里的每一种形状（平面、球、圆柱……）都是一个 Primitive。
-// 这里用面向对象的“抽象基类 + 虚函数”来组织：基类规定接口（在表面采样若干点、
-// 报出名称），各派生类给出自己的实现；makeScene 只通过基类指针调用 sample()，
-// 在运行时由多态决定实际采样哪种几何体——这样新增一种形状只需再派生一个子类，
-// 不必改动场景生成代码。
+// 合成点云的几何体基类。派生类负责在各自表面采样点。
 class Primitive {
 public:
     explicit Primitive(int label) : label_(label) {}
@@ -23,19 +18,14 @@ public:
 
     int label() const { return label_; }
 
-    // 几何体名称（纯虚函数，子类必须实现）
     virtual std::string name() const = 0;
 
-    // 在该几何体表面采样 count 个点，叠加高斯噪声后追加到 cloud，
-    // 同时把真值标签写入 labels。（纯虚函数，多态的核心）
-    // 传入共享的随机引擎与分布对象，保证整场景的随机序列连续、可复现。
     virtual void sample(int count, std::mt19937& rng,
                         std::normal_distribution<float>& noise,
                         std::uniform_real_distribution<float>& uni,
                         PointCloud& cloud, std::vector<int>& labels) const = 0;
 
 protected:
-    // 派生类公用：把一个点叠加噪声后写入点云与标签
     void emit(const Vec3& p, std::mt19937& rng,
               std::normal_distribution<float>& noise,
               PointCloud& cloud, std::vector<int>& labels) const {
@@ -46,8 +36,7 @@ protected:
     int label_;
 };
 
-// 平面（参数化为 origin + du*u + dv*v，u,v in [0,1]）。
-// 地面、斜面都用它，只是 origin/du/dv 不同——这就是“同一个类、不同对象”。
+// 平面：origin + du*u + dv*v，u、v 的范围为 [0,1]。
 class PlanePrimitive : public Primitive {
 public:
     PlanePrimitive(int label, const Vec3& origin, const Vec3& du, const Vec3& dv)

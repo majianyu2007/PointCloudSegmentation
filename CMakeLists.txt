@@ -1,7 +1,6 @@
 cmake_minimum_required(VERSION 3.16)
 project(PointCloudSegmentation LANGUAGES C CXX)
 
-# 统一用 C++17
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
@@ -12,12 +11,20 @@ if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Release)
 endif()
 
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+foreach(config DEBUG RELEASE RELWITHDEBINFO MINSIZEREL)
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_${config} ${CMAKE_BINARY_DIR}/bin)
+endforeach()
+
 option(PCSEG_BUILD_GUI "Build the OpenGL/ImGui viewer when dependencies are available" ON)
 option(PCSEG_FETCH_GLFW "Download GLFW with CMake FetchContent when GLFW is not installed" ON)
 
-# ----------------------------------------------------------------------------
-# 核心库：点云数据结构 + KD树 + 法向量 + 分割算法 + 文件IO。纯 C++，不依赖任何 GUI。
-# ----------------------------------------------------------------------------
+function(pcseg_set_windows_runtime target_name)
+    if(MINGW)
+        target_link_options(${target_name} PRIVATE -static -static-libgcc -static-libstdc++)
+    endif()
+endfunction()
+
 add_library(pcseg_core STATIC
     core/src/PointCloud.cpp
     core/src/KdTree.cpp
@@ -29,24 +36,16 @@ add_library(pcseg_core STATIC
 )
 target_include_directories(pcseg_core PUBLIC core/include)
 
-# ----------------------------------------------------------------------------
-# 命令行工具
-# ----------------------------------------------------------------------------
 add_executable(pcseg_cli apps/cli/main.cpp)
 target_link_libraries(pcseg_cli PRIVATE pcseg_core)
+pcseg_set_windows_runtime(pcseg_cli)
 
-# ----------------------------------------------------------------------------
-# 单元测试（CTest）
-# ----------------------------------------------------------------------------
 enable_testing()
 add_executable(pcseg_tests tests/test_main.cpp)
 target_link_libraries(pcseg_tests PRIVATE pcseg_core)
+pcseg_set_windows_runtime(pcseg_tests)
 add_test(NAME pcseg_tests COMMAND pcseg_tests)
 
-# ----------------------------------------------------------------------------
-# 图形界面（GLFW + OpenGL + Dear ImGui）。
-# 只有在能找到 GLFW、且 third_party/imgui 存在时才编译，缺了不影响核心库和测试。
-# ----------------------------------------------------------------------------
 if(PCSEG_BUILD_GUI)
     add_subdirectory(apps/gui)
 endif()
