@@ -56,7 +56,7 @@
     build.bat --debug          构建 Debug 版本
     build.bat --skip-tests     构建后不运行测试
 
-build.bat 会优先使用项目目录中的便携编译环境：tools\w64devkit\bin、tools\cmake\bin、tools\ninja。项目路径含中文时，脚本会自动创建临时英文路径跳板，并优先使用 Ninja，以减少 MinGW 对中文路径的兼容问题。预编译运行目录仍建议一并提交，方便老师直接运行。
+build.bat 会优先使用项目目录中的便携编译环境：tools\w64devkit\bin、tools\cmake\bin、tools\ninja。项目路径含中文时，脚本会自动创建临时英文路径跳板，并优先使用 Ninja，以减少 MinGW 对中文路径的兼容问题。预编译运行目录仍建议一并提交，方便在未配置开发环境的电脑上直接运行。
 
 四、手动构建
 

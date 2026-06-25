@@ -6,7 +6,7 @@
 
 ## 功能
 
-| 课程要求 | 项目实现 |
+| 项目要求 | 实现情况 |
 |---|---|
 | C++ 多文件工程 | `core`、`apps/cli`、`apps/gui`、`tests` 分模块组织 |
 | 面向对象设计 | `PointCloud`、`KdTree`、`Primitive`、`PlanePrimitive`、`SpherePrimitive`、`CylinderPrimitive`、`Viewer` 等类 |
@@ -34,7 +34,7 @@ PointCloudSegmentation/
 ├── third_party/imgui/    Dear ImGui 源码
 ├── CMakeLists.txt
 ├── build.bat             Windows 构建脚本
-└── readme.txt            提交给老师查看的运行说明
+└── readme.txt            运行与提交说明
 ```
 
 ## 环境依赖
@@ -54,7 +54,7 @@ PointCloudSegmentation/
 
 ## Windows 构建
 
-如果只是给老师演示运行，建议先生成免配置运行目录：
+如需免配置运行，可先生成独立运行目录：
 
 ```bat
 package_windows.bat
@@ -73,7 +73,7 @@ dist\PointCloudSegmentation_Run\
 └── README.md
 ```
 
-使用者可直接双击 `run_gui.bat` 打开图形界面，或双击 `run_demo.bat` 运行命令行演示并生成 `segmented_demo.ply`。这个目录不需要额外安装 CMake、配置 GLFW 或调整 PATH。
+可直接双击 `run_gui.bat` 打开图形界面，或双击 `run_demo.bat` 运行命令行演示并生成 `segmented_demo.ply`。这个目录不需要额外安装 CMake、配置 GLFW 或调整 PATH。
 
 最简单的方式是在项目根目录双击或执行：
 
@@ -99,7 +99,7 @@ build\bin\pcseg_gui.exe
 
 脚本会自动查找常见位置的 CMake 和 Ninja。在中文路径下会优先使用 Ninja，避免 MinGW Makefiles 对中文路径兼容不稳定的问题。
 
-本项目也带有便携编译环境。`build.bat` 会优先使用 `tools\w64devkit\bin`、`tools\cmake\bin` 和 `tools\ninja`，这样老师电脑即使没有配置 C++ 编译环境，也可以直接运行 `build.bat`。项目路径包含中文时，脚本会自动创建临时英文路径跳板，避免 MinGW 对中文路径解析不稳定。
+本项目也带有便携编译环境。`build.bat` 会优先使用 `tools\w64devkit\bin`、`tools\cmake\bin` 和 `tools\ninja`，即使当前系统没有预先配置 C++ 编译环境，也可以直接运行 `build.bat`。项目路径包含中文时，脚本会自动创建临时英文路径跳板，避免 MinGW 对中文路径解析不稳定。
 
 ## 手动构建
 
