@@ -21,6 +21,7 @@ xcopy "data" "%DIST_DIR%\data" /e /i /y >nul
 
 copy /y "pcseg_cli.bat" "%DIST_DIR%\" >nul
 copy /y "pcseg_gui.bat" "%DIST_DIR%\" >nul
+if exist "%DIST_DIR%\imgui.ini" del /q "%DIST_DIR%\imgui.ini"
 
 echo.
 echo Package is ready:

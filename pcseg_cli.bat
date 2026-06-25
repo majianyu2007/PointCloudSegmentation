@@ -4,9 +4,9 @@ chcp 65001 >nul
 cd /d "%~dp0"
 
 if exist "pcseg_cli.exe" (
-    set "CLI_EXE=%~dp0pcseg_cli.exe"
+    set "CLI_EXE=pcseg_cli.exe"
 ) else if exist "build\bin\pcseg_cli.exe" (
-    set "CLI_EXE=%~dp0build\bin\pcseg_cli.exe"
+    set "CLI_EXE=build\bin\pcseg_cli.exe"
 ) else (
     echo pcseg_cli.exe was not found.
     echo Please run build.bat or package_windows.bat first.
@@ -15,7 +15,7 @@ if exist "pcseg_cli.exe" (
 )
 
 echo Running demo segmentation...
-"%CLI_EXE%" --demo -o "%~dp0segmented_demo.ply"
+"%CLI_EXE%" --demo -o "segmented_demo.ply"
 if errorlevel 1 (
     echo.
     echo Demo failed.
@@ -25,5 +25,5 @@ if errorlevel 1 (
 
 echo.
 echo Demo finished. Output file:
-echo   %~dp0segmented_demo.ply
+echo   segmented_demo.ply
 pause
