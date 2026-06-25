@@ -19,16 +19,16 @@ copy /y "readme.txt" "%DIST_DIR%\" >nul
 copy /y "README.md" "%DIST_DIR%\" >nul
 xcopy "data" "%DIST_DIR%\data" /e /i /y >nul
 
-copy /y "run_demo.bat" "%DIST_DIR%\" >nul
-copy /y "run_gui.bat" "%DIST_DIR%\" >nul
+copy /y "pcseg_cli.bat" "%DIST_DIR%\" >nul
+copy /y "pcseg_gui.bat" "%DIST_DIR%\" >nul
 
 echo.
 echo Package is ready:
 echo   %DIST_DIR%
 echo.
-echo Teacher can run:
-echo   %DIST_DIR%\run_gui.bat
-echo   %DIST_DIR%\run_demo.bat
+echo Run:
+echo   %DIST_DIR%\pcseg_gui.bat
+echo   %DIST_DIR%\pcseg_cli.bat
 exit /b 0
 
 :fail

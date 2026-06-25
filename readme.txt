@@ -30,8 +30,8 @@
 
 进入该目录后：
 
-    双击 run_gui.bat   打开图形界面
-    双击 run_demo.bat  运行命令行演示，生成 segmented_demo.ply
+    双击 pcseg_gui.bat  打开图形界面
+    双击 pcseg_cli.bat  运行命令行演示，生成 segmented_demo.ply
 
 该运行目录已经包含 exe、data 和说明文档，不需要额外安装 CMake、配置 GLFW 或修改 PATH。
 
@@ -48,6 +48,8 @@
 
     build\bin\pcseg_cli.exe
     build\bin\pcseg_gui.exe
+
+构建脚本会同时复制 data 到 build\bin\data，并在 build\bin 中生成 pcseg_cli.bat 和 pcseg_gui.bat，可直接从该目录双击运行。
 
 常用构建命令：
 
@@ -137,6 +139,6 @@ build.bat 会优先使用项目目录中的便携编译环境：tools\w64devkit\
 
 十一、提交打包建议
 
-提交源码时建议保留 apps、core、data、docs、tests、third_party/imgui、third_party/glfw、tools/w64devkit、tools/cmake、tools/ninja、CMakeLists.txt、build.bat、package_windows.bat、run_demo.bat、run_gui.bat、README.md、readme.txt。
+提交源码时建议保留 apps、core、data、docs、tests、third_party/imgui、third_party/glfw、tools/w64devkit、tools/cmake、tools/ninja、CMakeLists.txt、build.bat、package_windows.bat、pcseg_cli.bat、pcseg_gui.bat、README.md、readme.txt。
 打包前建议删除 build、build-ninja、build-windows、.git、.claude 等本地构建或临时目录。
 如果需要提交可执行文件，建议运行 package_windows.bat，并把 dist\PointCloudSegmentation_Run 一并提交；不要提交完整 Debug 或 Release 构建目录。

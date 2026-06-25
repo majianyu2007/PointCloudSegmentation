@@ -49,3 +49,23 @@ add_test(NAME pcseg_tests COMMAND pcseg_tests)
 if(PCSEG_BUILD_GUI)
     add_subdirectory(apps/gui)
 endif()
+
+add_custom_target(pcseg_copy_runtime_files ALL
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+            ${CMAKE_SOURCE_DIR}/data
+            ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/data
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            ${CMAKE_SOURCE_DIR}/pcseg_cli.bat
+            ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/pcseg_cli.bat
+    COMMENT "Copying runtime data and launcher scripts"
+)
+add_dependencies(pcseg_copy_runtime_files pcseg_cli)
+if(TARGET pcseg_gui)
+    add_custom_target(pcseg_copy_gui_launcher ALL
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                ${CMAKE_SOURCE_DIR}/pcseg_gui.bat
+                ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/pcseg_gui.bat
+        COMMENT "Copying GUI launcher script"
+    )
+    add_dependencies(pcseg_copy_gui_launcher pcseg_gui)
+endif()

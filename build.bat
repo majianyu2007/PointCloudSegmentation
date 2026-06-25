@@ -106,7 +106,7 @@ if "%RUN_TESTS%"=="ON" (
 echo.
 echo Build finished.
 echo Command line: "%BUILD_DIR%\bin\pcseg_cli.exe" --demo -o "%BUILD_DIR%\segmented_demo.ply"
-echo GUI:          "%BUILD_DIR%\bin\pcseg_gui.exe"
+if "%BUILD_GUI%"=="ON" echo GUI:          "%BUILD_DIR%\bin\pcseg_gui.exe"
 exit /b 0
 
 :help

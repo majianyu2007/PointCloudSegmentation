@@ -66,14 +66,14 @@ package_windows.bat
 dist\PointCloudSegmentation_Run\
 ├── pcseg_cli.exe
 ├── pcseg_gui.exe
-├── run_demo.bat
-├── run_gui.bat
+├── pcseg_cli.bat
+├── pcseg_gui.bat
 ├── data\
 ├── readme.txt
 └── README.md
 ```
 
-可直接双击 `run_gui.bat` 打开图形界面，或双击 `run_demo.bat` 运行命令行演示并生成 `segmented_demo.ply`。这个目录不需要额外安装 CMake、配置 GLFW 或调整 PATH。
+可直接双击 `pcseg_gui.bat` 打开图形界面，或双击 `pcseg_cli.bat` 运行命令行演示并生成 `segmented_demo.ply`。这个目录不需要额外安装 CMake、配置 GLFW 或调整 PATH。
 
 最简单的方式是在项目根目录双击或执行：
 
@@ -96,6 +96,8 @@ build.bat --skip-tests     构建后不运行测试
 build\bin\pcseg_cli.exe
 build\bin\pcseg_gui.exe
 ```
+
+构建脚本会同时复制 `data` 到 `build\bin\data`，并在 `build\bin` 生成 `pcseg_cli.bat` 与 `pcseg_gui.bat`，可直接从该目录双击运行。
 
 脚本会自动查找常见位置的 CMake 和 Ninja。在中文路径下会优先使用 Ninja，避免 MinGW Makefiles 对中文路径兼容不稳定的问题。
 
@@ -204,8 +206,8 @@ build\bin\pcseg_gui.exe data\scene.ply
 - `CMakeLists.txt`
 - `build.bat`
 - `package_windows.bat`
-- `run_demo.bat`
-- `run_gui.bat`
+- `pcseg_cli.bat`
+- `pcseg_gui.bat`
 - `README.md`
 - `readme.txt`
 
