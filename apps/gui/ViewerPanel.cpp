@@ -17,9 +17,6 @@ namespace {
 std::vector<std::filesystem::path> candidateRoots() {
     std::vector<std::filesystem::path> roots;
 
-    std::filesystem::path sourceFile(__FILE__);
-    if (sourceFile.is_absolute())
-        roots.push_back(sourceFile.parent_path().parent_path().parent_path());
     std::filesystem::path cwd = std::filesystem::current_path();
     roots.push_back(cwd);
     for (std::filesystem::path p = cwd; p.has_parent_path(); p = p.parent_path()) {
